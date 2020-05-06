@@ -8,29 +8,27 @@ import (
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
 	"io"
-	"io/ioutil"
 	"log"
 	"net"
 	"os"
 )
 
 func main() {
+	// parse config
+	cfg, err := LoadConfig("server.toml")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	//create log file
-	logFile, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile(cfg.Log, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer logFile.Close()
 	log.SetOutput(logFile)
 
-	// get server add from file
-	srv, err := ioutil.ReadFile("server.ini")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	srvAddr := string(srv)
-	log.Println("Server addr: ", srvAddr)
+	log.Println("Server addr: ", cfg.Srv)
 
 	a := app.New()
 
@@ -49,7 +47,7 @@ func main() {
 
 	btnSave := widget.NewButton("OK", func() {
 		dataSend := fmt.Sprintf("%s %s %s", planEvent.Text, executor.Text, count.Text)
-		if err := sendData(srvAddr, dataSend); err != nil {
+		if err := sendData(cfg.Srv, dataSend); err != nil {
 			log.Println(err)
 		}
 

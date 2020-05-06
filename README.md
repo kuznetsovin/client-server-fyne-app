@@ -19,4 +19,17 @@ log = "log.txt"
 
 ## Server
 
-Server saved client information and generate Excel file with report.  
+Server saved client information to db and generate Excel file with report. 
+
+Server configuration file:
+
+```
+srv = "localhost:8080"
+log = "log.txt"
+db = "productdb.db"
+```
+
+```srv``` - server network address
+```log``` - path to log file
+```db``` - path to sqlite db
+ 

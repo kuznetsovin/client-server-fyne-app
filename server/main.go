@@ -10,8 +10,14 @@ import (
 )
 
 func main() {
+	// parse config
+	cfg, err := LoadConfig("config.toml")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	//create log file
-	logFile, err := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile(cfg.Log, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -19,12 +25,12 @@ func main() {
 	log.SetOutput(logFile)
 
 	store := SQLLiteStore{}
-	if err = store.Connect(); err != nil {
+	if err = store.Connect(cfg.Db); err != nil {
 		log.Fatal(err)
 	}
 
 	s := Server{}
-	if err = s.Init(&store); err != nil {
+	if err = s.Init(cfg.Srv, &store); err != nil {
 		log.Fatal(err)
 	}
 

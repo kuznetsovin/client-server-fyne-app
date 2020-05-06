@@ -1,0 +1,3 @@
+srv = ":8080"
+log = "log.txt"
+db = "productdb.db"

@@ -15,10 +15,10 @@ type SQLLiteStore struct {
 }
 
 //Connect init db connection and config table
-func (s *SQLLiteStore) Connect() error {
+func (s *SQLLiteStore) Connect(dbName string) error {
 	var err error
 
-	s.db, err = sql.Open("sqlite3", "productdb.db")
+	s.db, err = sql.Open("sqlite3", dbName)
 	if err != nil {
 		return fmt.Errorf("Open db error: %v\n", err)
 	}
@@ -27,7 +27,8 @@ func (s *SQLLiteStore) Connect() error {
 		return fmt.Errorf("Connection db error: %v\n", err)
 	}
 
-	_, err = s.db.Exec("create table IF NOT EXISTS schedule (event TEXT, executor TEXT, count TEXT)")
+	_, err = s.db.Exec(`create table IF NOT EXISTS schedule (event TEXT, executor TEXT, count TEXT, 
+created TIMESTAMP  DEFAULT CURRENT_TIMESTAMP)`)
 	if err != nil {
 		return fmt.Errorf("Init table error: %v\n", err)
 	}

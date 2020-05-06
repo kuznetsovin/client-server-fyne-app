@@ -14,13 +14,14 @@ type Server struct {
 }
 
 //Init initialize server instance
-func (s *Server) Init(db Store) error {
+func (s *Server) Init(addr string, db Store) error {
 	var err error
 
-	s.l, err = net.Listen("tcp", ":8080")
+	s.l, err = net.Listen("tcp", addr)
 	if err != nil {
 		return fmt.Errorf("Error start server: %v\n", err)
 	}
+	log.Println("Server start ", addr)
 
 	if db == nil {
 		return fmt.Errorf("Store not initializate\n")
@@ -32,7 +33,6 @@ func (s *Server) Init(db Store) error {
 
 //Run start listen connection on server
 func (s *Server) Run() {
-	log.Println("Server start :8080")
 	for {
 		conn, err := s.l.Accept()
 		if err != nil {

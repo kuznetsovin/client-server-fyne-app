@@ -15,7 +15,7 @@ import (
 
 func main() {
 	// parse config
-	cfg, err := LoadConfig("server.toml")
+	cfg, err := LoadConfig("config.toml")
 	if err != nil {
 		log.Fatal(err)
 	}

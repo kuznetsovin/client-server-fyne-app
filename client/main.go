@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/layout"
@@ -8,6 +9,7 @@ import (
 	"fyne.io/fyne/widget"
 	"io/ioutil"
 	"log"
+	"net"
 	"os"
 )
 
@@ -35,20 +37,25 @@ func main() {
 	w := a.NewWindow("Client")
 
 	// create form for send
+	planEvent := widget.NewEntry()
+	executor := widget.NewEntry()
+	count := widget.NewEntry()
 	form := widget.NewForm(
-		widget.NewFormItem("План. мероприятия", widget.NewEntry()),
-		widget.NewFormItem("Исполнители", widget.NewEntry()),
-		widget.NewFormItem("Количество обуч.", widget.NewEntry()),
+		widget.NewFormItem("План. мероприятия", planEvent),
+		widget.NewFormItem("Исполнители", executor),
+		widget.NewFormItem("Количество обуч.", count),
 	)
 
 	btnSave := widget.NewButton("OK", func() {
-		//TODO add server send information
-		//conn, err := net.Dial("tcp", srvAddr)
-		//if err != nil {
-		//	log.Fatalf("Error connect to server: %v\n", err)
-		//}
-		//
-		//_ = conn.Close()
+		dataSend := fmt.Sprintf("%s %s %s", planEvent.Text, executor.Text, count.Text)
+		if err := sendData(srvAddr, dataSend); err != nil {
+			log.Println(err)
+		}
+
+		// clear form fields
+		planEvent.SetText("")
+		executor.SetText("")
+		count.SetText("")
 	})
 
 	btnExit := widget.NewButton("Выход", func() {
@@ -68,4 +75,21 @@ func main() {
 
 	// start app
 	w.ShowAndRun()
+}
+
+//sendData send data to server
+func sendData(addr, data string) error {
+	// connect with server
+	conn, err := net.Dial("tcp", addr)
+	if err != nil {
+		return fmt.Errorf("Error connect to server: %v\n", err)
+	}
+
+	// send data to server
+	if _, err := conn.Write([]byte(data)); err != nil {
+		return fmt.Errorf("Error send data to server: %v\n", err)
+	}
+
+	// close connection
+	return conn.Close()
 }

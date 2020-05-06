@@ -13,6 +13,7 @@ type Server struct {
 	db Store
 }
 
+//Init initialize server instance
 func (s *Server) Init(db Store) error {
 	var err error
 
@@ -29,6 +30,7 @@ func (s *Server) Init(db Store) error {
 	return err
 }
 
+//Run start listen connection on server
 func (s *Server) Run() {
 	log.Println("Server start :8080")
 	for {
@@ -41,6 +43,7 @@ func (s *Server) Run() {
 	}
 }
 
+//handlerConn handler incoming connection
 func (s *Server) handlerConn(c net.Conn) {
 	defer c.Close()
 	buf := make([]byte, 2048)
@@ -54,7 +57,7 @@ func (s *Server) handlerConn(c net.Conn) {
 	rec := strings.Split(string(data), " ")
 	log.Println("Received data: ", rec)
 
-	// rec must have 3 field
+	// rec must have 3 field (as at form)
 	if len(rec) <= 3 {
 		if err := s.db.Insert(rec); err != nil {
 			log.Printf("Insert error: %v\n", err)

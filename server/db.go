@@ -14,6 +14,7 @@ type SQLLiteStore struct {
 	db *sql.DB
 }
 
+//Connect init db connection and config table
 func (s *SQLLiteStore) Connect() error {
 	var err error
 
@@ -32,6 +33,8 @@ func (s *SQLLiteStore) Connect() error {
 	}
 	return err
 }
+
+//Insert insert record to db
 func (s *SQLLiteStore) Insert(rec []string) error {
 	var err error
 	if len(rec) <= 3 {

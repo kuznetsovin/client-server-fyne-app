@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/layout"
 	"fyne.io/fyne/theme"
 	"fyne.io/fyne/widget"
+	"io"
 	"io/ioutil"
 	"log"
 	"net"
@@ -89,6 +90,16 @@ func sendData(addr, data string) error {
 	if _, err := conn.Write([]byte(data)); err != nil {
 		return fmt.Errorf("Error send data to server: %v\n", err)
 	}
+
+	log.Printf("Send data: %v\n", data)
+
+	resp := make([]byte, 512)
+	respLen, err := conn.Read(resp)
+	if err != nil && err != io.EOF {
+		return fmt.Errorf("Response error: %v\n", err)
+	}
+
+	log.Println("Packet processing: ", string(resp[:respLen]))
 
 	// close connection
 	return conn.Close()

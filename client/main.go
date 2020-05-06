@@ -39,22 +39,30 @@ func main() {
 	planEvent := widget.NewEntry()
 	executor := widget.NewEntry()
 	count := widget.NewEntry()
+	stateLabel := widget.NewLabel("")
 	form := widget.NewForm(
 		widget.NewFormItem("План. мероприятия", planEvent),
 		widget.NewFormItem("Исполнители", executor),
 		widget.NewFormItem("Количество обуч.", count),
+		widget.NewFormItem("Статус", stateLabel),
 	)
 
 	btnSave := widget.NewButton("OK", func() {
 		dataSend := fmt.Sprintf("%s %s %s", planEvent.Text, executor.Text, count.Text)
 		if err := sendData(cfg.Srv, dataSend); err != nil {
 			log.Println(err)
+			stateLabel.SetText(err.Error())
+		} else {
+			stateLabel.SetText("данные сохранены")
 		}
+	})
 
+	btnClear := widget.NewButton("Очистить", func() {
 		// clear form fields
 		planEvent.SetText("")
 		executor.SetText("")
 		count.SetText("")
+		stateLabel.SetText("")
 	})
 
 	btnExit := widget.NewButton("Выход", func() {
@@ -65,7 +73,7 @@ func main() {
 		widget.NewVBox(
 			form,
 			layout.NewSpacer(), // add empty block
-			widget.NewHBox(layout.NewSpacer(), btnSave, btnExit), // add button block
+			widget.NewHBox(layout.NewSpacer(), btnClear, btnSave, btnExit), // add button block
 		))
 
 	// change theme and window size
